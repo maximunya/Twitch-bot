@@ -1,5 +1,6 @@
 import os
 import random
+from datetime import datetime
 
 import twitchio
 from twitchio.ext import commands, routines
@@ -225,6 +226,8 @@ class Bot(commands.Bot):
             'кто знает? спросите лучше Женю',
         ]
 
+        self.chan = self.get_channel("zhenyaoh")
+        self.logs_path = f'logs/logs_{datetime.now().strftime("%d-%m-%Y")}.txt'
         self.call_bot = '@waifu_assistent'
         self.question_mark = '?'
         self.telegram_reminding = ('заходите в мой телеграм-канал! '
@@ -233,11 +236,17 @@ class Bot(commands.Bot):
         self.donate_reminding = ('вы можете помочь стримеру денежкой: '
                                  'https://www.donationalerts.com/r/zhenyaoh')
 
+        self.boosty_reminding = ('у меня есть косплей на ху тао! вот ссылка: '
+                                 'https://boosty.to/zhenyaohayo')
+
         self.discord = 'дискордик: https://discord.gg/fDrsZA8B56'
         self.telegram = 'наше место: https://t.me/zhenyaohayo'
 
-        self.donate = 'спасибо что интересуешься ♡︎ '\
-                      'https://www.donationalerts.com/r/zhenyaoh ♡︎'
+        self.donate = ('спасибо что интересуешься ♡︎ '
+                       'https://www.donationalerts.com/r/zhenyaoh ♡︎')
+
+        self.boosty = ('вот ссылка на мой бусти! '
+                       'https://boosty.to/zhenyaohayo')
 
         self.rules = ('нельзя: ♡︎ оскорблять меня/модераторов ♡︎ '
                       'банворды ♡︎ проявлять расизм, сексизм, шовинизм '
@@ -247,16 +256,17 @@ class Bot(commands.Bot):
 
         self.help = 'нуждается в помощи стримера!'
 
-        self.comms = ('!правила – правила чата; !тг – ссылка на нашу телегу; '
-                      '!дс – ссылка на канал в дискорде; !донат – ссылка на '
-                      'донат; !вайфу – узнать свою вайфу; !хасбунд – узнать '
-                      'своего мужа; !баннер – кто и на какой крутке тебе '
-                      'выпадет с ивентового баннера; !баннероружие - как '
-                      '!баннер, только с оружием; !паста – рандомная паста; '
-                      '!помощь – попросить стримера помочь; !писюн – размер '
-                      'вашего писюна; !шанс – вероятность того или иного '
-                      'события; !спросимвайфу - ответ на вопрос (да/нет); '
-                      '!осу - осуждаем всем чатом')
+        self.comms = ('!rules – правила чата; !telegram – ссылка на нашу '
+                      'телегу; !discord – ссылка на канал в дискорде; '
+                      '!donate – ссылка на донат; !waifu – узнать свою '
+                      'вайфу; !husband – узнать '
+                      'своего мужа; !banner1(2) – кто и на какой крутке тебе '
+                      'выпадет с ивентового баннера; !weaponsbanner - как '
+                      '"!banner", только с оружием; !paste – рандомная паста; '
+                      '!help – попросить стримера помочь; !jujun – размер '
+                      'вашего писюна; !chance – вероятность того или иного '
+                      'события; !askwaifu - ответ на вопрос (да/нет); '
+                      '!asu - осуждаем всем чатом; !boosty - ссылка на бусти')
 
         self.osu = ('ОСУЖДААААЮ не одобряю, написавший/сказавший это очень '
                     'ПЛОХОЙ НЕВОСПИТАННЫЙ человек, зачем ты такое '
@@ -336,24 +346,38 @@ class Bot(commands.Bot):
 
     async def event_ready(self):
         """Starts the bot and routines,
-        prints 2 strings in console if everything is ok.
+        prints 3 strings in console if everything is ok.
         """
         print(f'Logged in as | {self.nick}')
         print(f'User id is | {self.user_id}')
+        print('Бот запущен!')
         self.send_reminder.start()
         self.send_donate.start()
 
     async def event_message(self, message: twitchio.Message):
-        """The bot reacts to messages in Twitch-chat.
+        """The bot reacts to messages in Twitch chat, writes
+        logs and prints messages from chat in the console.
 
         Response cases:
         1. When a question is addressed to the bot
         2. Someone wrote any banword from the list in the chat
         3. Someone wrote 'привет' in the chat
         """
+
+        # Ignores messages sent by the bot itself
         if message.echo:
             return
-        print(message.content)
+
+        # Prints messages form Twitch chat in the console
+        print(f'{message.author.name}: {message.content}')
+
+        # Writes the chat logs
+        with open(self.logs_path, 'a') as logs:
+            logs.write(f'{message.author.name}: {message.content} '
+                       f'[{datetime.now().strftime("%H:%M:%S")}]\n')
+
+        # Lets the bot know we want to handle and invoke our commands
+        await self.handle_commands(message)
 
         # Answering the question
         if self.call_bot in message.content.lower():
@@ -370,14 +394,12 @@ class Bot(commands.Bot):
         # Greets viewers back
         if message.content.lower() == 'привет':
             await message.channel.send(f'приветик, @{message.author.name}!')
-        await self.handle_commands(message)
 
-    @routines.routine(minutes=25, wait_first=True)
+    @routines.routine(minutes=26, wait_first=True)
     async def send_reminder(self):
-        """Sends a random reminding from the list every 25 minutes."""
-        chan = self.get_channel("zhenyaoh")
-        await chan.send(random.choice(self.remindings))
-        await chan.send('напиши "!команды" и узнай что я умею!')
+        """Sends a random reminding from the list every 26 minutes."""
+        await self.chan.send(random.choice(self.remindings))
+        await self.chan.send('напиши "!команды" и узнай что я умею!')
 
     @send_reminder.before_routine
     async def before_send_reminder(self):
@@ -386,28 +408,26 @@ class Bot(commands.Bot):
         """
         await self.wait_for_ready()
 
-    @routines.routine(minutes=45, wait_first=True)
+    @routines.routine(minutes=43, wait_first=True)
     async def send_tg(self):
         """Sends a reminding of telegram-channel
-        every 45 minutes.
+        every 43 minutes.
         """
-        chan = self.get_channel("zhenyaoh")
-        await chan.send(self.telegram_reminding)
+        await self.chan.send(self.telegram_reminding)
 
     @send_tg.before_routine
     async def before_send_tg(self):
         """Waits for ready before starting
-        the telegram reminder routine.
+        the Telegram reminder routine.
         """
         await self.wait_for_ready()
 
-    @routines.routine(minutes=35, wait_first=True)
+    @routines.routine(minutes=33, wait_first=True)
     async def send_donate(self):
         """Sends a reminding of the opportunity
-        to donate to a streamer every 35 minutes.
+        to donate to a streamer every 33 minutes.
         """
-        chan = self.get_channel("zhenyaoh")
-        await chan.send(self.donate_reminding)
+        await self.chan.send(self.donate_reminding)
 
     @send_donate.before_routine
     async def before_send_donate(self):
@@ -415,6 +435,76 @@ class Bot(commands.Bot):
         the donate reminder routine.
         """
         await self.wait_for_ready()
+
+    @routines.routine(minutes=37, wait_first=True)
+    async def send_boosty(self):
+        """Sends a reminding of the opportunity
+        to subscribe to a streamer's Boosty every 37 minutes.
+        """
+        await self.chan.send(self.boosty_reminding)
+
+    @send_donate.before_routine
+    async def before_send_boosty(self):
+        """Waits for ready before starting
+        the Boosty reminder routine.
+        """
+        await self.wait_for_ready()
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def banner1(self, ctx: commands.Context):
+        """Predicts which character and on which wish will drop
+        to the user in the first character event banner.
+        """
+        character = random.choices(self.characters_banner1,
+                                   self.characters_banner_weights)
+        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
+                       f'{character[0]} на '
+                       f'{get_successful_attempt_for_characters_banner()} '
+                       f'крутке!')
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def banner2(self, ctx: commands.Context):
+        """Predicts which character and on which wish will drop
+        to the user in the second character event banner.
+        """
+        character = random.choices(self.characters_banner2,
+                                   self.characters_banner_weights)
+        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
+                       f'{character[0]} на '
+                       f'{get_successful_attempt_for_characters_banner()} '
+                       f'крутке!')
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def weaponsbanner(self, ctx: commands.Context):
+        """Predicts which weapon and on which wish will drop
+        to the user in the weapon event banner.
+        """
+        weapon = random.choices(self.weapons_banner,
+                                weights=self.weapons_banner_weights)
+        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
+                       f'{weapon[0]} на '
+                       f'{get_successful_attempt_for_weapons_banner()} '
+                       f'крутке!')
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def waifu(self, ctx: commands.Context):
+        """Returns a random waifu from the list to the user."""
+        waifu = random.choice(self.waifu_list)
+        await ctx.send(f'@{ctx.author.name.strip()} '
+                       f'твоя вайфу – {waifu.title()}')
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def husband(self, ctx: commands.Context):
+        """Returns a random husband from the list to the user."""
+        husband = random.choices(self.husband_list,
+                                 weights=self.husband_banner_weights)
+        await ctx.send(f'@{ctx.author.name.strip()} твой хасбунд – '
+                       f'{husband[0].title()}')
 
     @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command()
@@ -427,14 +517,6 @@ class Bot(commands.Bot):
     async def discord(self, ctx: commands.Context):
         """Sends the Discord link."""
         await ctx.send(self.discord)
-
-    @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command()
-    async def waifu(self, ctx: commands.Context):
-        """Returns a random waifu from the list to the user."""
-        choice = random.choice(self.waifu_list)
-        await ctx.send(f'@{ctx.author.name.strip()} '
-                       f'твоя вайфу – {choice.title()}')
 
     @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command()
@@ -476,6 +558,12 @@ class Bot(commands.Bot):
     async def donate(self, ctx: commands.Context):
         """Sends the DonationAlerts link."""
         await ctx.send(self.donate)
+
+    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.command()
+    async def boosty(self, ctx: commands.Context):
+        """Sends the Boosty link."""
+        await ctx.send(self.boosty)
 
     @commands.command()
     async def gratz(self, ctx: commands.Context):
@@ -519,54 +607,6 @@ class Bot(commands.Bot):
     async def asu(self, ctx: commands.Context):
         """Sends a judgmental paste in the chat."""
         await ctx.send(self.osu)
-
-    @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command()
-    async def husband(self, ctx: commands.Context):
-        """Returns a random husband from the list to the user."""
-        husband = random.choices(self.husband_list,
-                                 weights=self.husband_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()} твой хасбунд – '
-                       f'{husband[0].title()}')
-
-    @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command()
-    async def banner1(self, ctx: commands.Context):
-        """Predicts which character and on which wish will drop
-        to the user in the first character event banner.
-        """
-        character = random.choices(self.characters_banner1,
-                                   self.characters_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{character[0]} на '
-                       f'{get_successful_attempt_for_characters_banner()} '
-                       f'крутке!')
-
-    @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command()
-    async def banner2(self, ctx: commands.Context):
-        """Predicts which character and on which wish will drop
-        to the user in the second character event banner.
-        """
-        character = random.choices(self.characters_banner2,
-                                   self.characters_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{character[0]} на '
-                       f'{get_successful_attempt_for_characters_banner()} '
-                       f'крутке!')
-
-    @commands.cooldown(1, 10, commands.Bucket.channel)
-    @commands.command()
-    async def weaponbanner(self, ctx: commands.Context):
-        """Predicts which weapon and on which wish will drop
-        to the user in the weapon event banner.
-        """
-        weapon = random.choices(self.weapons_banner,
-                                weights=self.weapons_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{weapon[0]} на '
-                       f'{get_successful_attempt_for_weapons_banner()} '
-                       f'крутке!')
 
 
 # pipenv run python bot.py
