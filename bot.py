@@ -352,7 +352,9 @@ class Bot(commands.Bot):
         print(f'User id is | {self.user_id}')
         print('Бот запущен!')
         self.send_reminder.start()
+        self.send_tg.start()
         self.send_donate.start()
+        self.send_boosty.start()
 
     async def event_message(self, message: twitchio.Message):
         """The bot reacts to messages in Twitch chat, writes
