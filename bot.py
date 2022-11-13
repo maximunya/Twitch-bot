@@ -256,17 +256,19 @@ class Bot(commands.Bot):
 
         self.help = 'нуждается в помощи стримера!'
 
-        self.comms = ('!rules – правила чата; !telegram – ссылка на нашу '
-                      'телегу; !discord – ссылка на канал в дискорде; '
-                      '!donate – ссылка на донат; !waifu – узнать свою '
-                      'вайфу; !husband – узнать '
-                      'своего мужа; !banner1(2) – кто и на какой крутке тебе '
-                      'выпадет с ивентового баннера; !weaponsbanner - как '
-                      '"!banner", только с оружием; !paste – рандомная паста; '
-                      '!help – попросить стримера помочь; !jujun – размер '
-                      'вашего писюна; !chance – вероятность того или иного '
-                      'события; !askwaifu - ответ на вопрос (да/нет); '
-                      '!asu - осуждаем всем чатом; !boosty - ссылка на бусти')
+        self.comms1 = ('!rules – правила чата; !telegram – ссылка на нашу '
+                       'телегу; !discord – ссылка на канал в дискорде; '
+                       '!donate – ссылка на донат; !waifu – узнать свою '
+                       'вайфу; !husband – узнать '
+                       'своего мужа; !banner1(2) – кто и на какой крутке тебе '
+                       'выпадет с ивентового баннера;')
+
+        self.comms2 = ('!weaponsbanner - как "!banner", только '
+                       'с оружием; !paste – рандомная паста; '
+                       '!help – попросить стримера помочь; !jujun – размер '
+                       'вашего писюна; !chance – вероятность того или иного '
+                       'события; !askwaifu - ответ на вопрос (да/нет); '
+                       '!asu - осуждаем всем чатом; !boosty - ссылка на бусти')
 
         self.osu = ('ОСУЖДААААЮ не одобряю, написавший/сказавший это очень '
                     'ПЛОХОЙ НЕВОСПИТАННЫЙ человек, зачем ты такое '
@@ -518,27 +520,28 @@ class Bot(commands.Bot):
     @commands.command()
     async def discord(self, ctx: commands.Context):
         """Sends the Discord link."""
-        await ctx.send(self.discord)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.discord}')
 
     @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command()
     async def telegram(self, ctx: commands.Context):
         """Sends the Telegram-channel link."""
-        await ctx.send(self.telegram)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.telegram}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 30, commands.Bucket.channel)
     @commands.command()
     async def rules(self, ctx: commands.Context):
         """Sends the list of rules on the streamer's Twitch-channel."""
-        await ctx.send(self.rules)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.rules}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 30, commands.Bucket.channel)
     @commands.command()
     async def commands(self, ctx: commands.Context):
         """Sends the list of commands, which are available
         on the streamer's Twitch-channel by using prefix '!'.
         """
-        await ctx.send(self.comms)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.comms1}')
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.comms2}')
 
     @commands.cooldown(1, 30, commands.Bucket.channel)
     @commands.command()
@@ -559,13 +562,13 @@ class Bot(commands.Bot):
     @commands.command()
     async def donate(self, ctx: commands.Context):
         """Sends the DonationAlerts link."""
-        await ctx.send(self.donate)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.donate}')
 
     @commands.cooldown(1, 10, commands.Bucket.channel)
     @commands.command()
     async def boosty(self, ctx: commands.Context):
         """Sends the Boosty link."""
-        await ctx.send(self.boosty)
+        await ctx.send(f'@{ctx.author.name.strip()}, {self.boosty}')
 
     @commands.command()
     async def gratz(self, ctx: commands.Context):
