@@ -403,7 +403,7 @@ class Bot(commands.Bot):
         """Sends a random reminding from the list every 26 minutes."""
         chan = self.get_channel("zhenyaoh")
         await chan.send(random.choice(self.remindings))
-        await self.chan.send('напиши "!команды" и узнай что я умею!')
+        await chan.send('напиши "!команды" и узнай что я умею!')
 
     @send_reminder.before_routine
     async def before_send_reminder(self):
