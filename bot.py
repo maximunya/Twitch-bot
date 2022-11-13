@@ -226,7 +226,6 @@ class Bot(commands.Bot):
             'кто знает? спросите лучше Женю',
         ]
 
-        self.chan = self.get_channel("zhenyaoh")
         self.logs_path = f'logs/logs_{datetime.now().strftime("%d-%m-%Y")}.txt'
         self.call_bot = '@waifu_assistent'
         self.question_mark = '?'
@@ -402,7 +401,8 @@ class Bot(commands.Bot):
     @routines.routine(minutes=26, wait_first=True)
     async def send_reminder(self):
         """Sends a random reminding from the list every 26 minutes."""
-        await self.chan.send(random.choice(self.remindings))
+        chan = self.get_channel("zhenyaoh")
+        await chan.send(random.choice(self.remindings))
         await self.chan.send('напиши "!команды" и узнай что я умею!')
 
     @send_reminder.before_routine
@@ -417,7 +417,8 @@ class Bot(commands.Bot):
         """Sends a reminding of telegram-channel
         every 43 minutes.
         """
-        await self.chan.send(self.telegram_reminding)
+        chan = self.get_channel("zhenyaoh")
+        await chan.send(self.telegram_reminding)
 
     @send_tg.before_routine
     async def before_send_tg(self):
@@ -431,7 +432,8 @@ class Bot(commands.Bot):
         """Sends a reminding of the opportunity
         to donate to a streamer every 33 minutes.
         """
-        await self.chan.send(self.donate_reminding)
+        chan = self.get_channel("zhenyaoh")
+        await chan.send(self.donate_reminding)
 
     @send_donate.before_routine
     async def before_send_donate(self):
@@ -445,7 +447,8 @@ class Bot(commands.Bot):
         """Sends a reminding of the opportunity
         to subscribe to a streamer's Boosty every 37 minutes.
         """
-        await self.chan.send(self.boosty_reminding)
+        chan = self.get_channel("zhenyaoh")
+        await chan.send(self.boosty_reminding)
 
     @send_donate.before_routine
     async def before_send_boosty(self):
