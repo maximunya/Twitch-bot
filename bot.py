@@ -1,5 +1,6 @@
 import os
 import random
+import re
 from datetime import datetime
 
 import twitchio
@@ -226,6 +227,7 @@ class Bot(commands.Bot):
             'кто знает? спросите лучше Женю',
         ]
 
+        self.full_logs_path = f'logs/full_logs.txt'
         self.logs_path = f'logs/logs_{datetime.now().strftime("%d-%m-%Y")}.txt'
         self.call_bot = '@waifu_assistent'
         self.question_mark = '?'
@@ -378,6 +380,9 @@ class Bot(commands.Bot):
         with open(self.logs_path, 'a') as logs:
             logs.write(f'{message.author.name}: {message.content} '
                        f'[{datetime.now().strftime("%H:%M:%S")}]\n')
+        with open(self.full_logs_path, 'a') as full_logs:
+            full_logs.write(f'{message.author.name}: {message.content} '
+                            f'[{datetime.now().strftime("%d/%m/%Y в %H:%M:%S")}]\n')
 
         # Lets the bot know we want to handle and invoke our commands
         await self.handle_commands(message)
@@ -457,7 +462,7 @@ class Bot(commands.Bot):
         """
         await self.wait_for_ready()
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def banner1(self, ctx: commands.Context):
         """Predicts which character and on which wish will drop
@@ -465,12 +470,12 @@ class Bot(commands.Bot):
         """
         character = random.choices(self.characters_banner1,
                                    self.characters_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{character[0]} на '
-                       f'{get_successful_attempt_for_characters_banner()} '
-                       f'крутке!')
+        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
+                        f'{character[0]} на '
+                        f'{get_successful_attempt_for_characters_banner()} '
+                        f'крутке!')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def banner2(self, ctx: commands.Context):
         """Predicts which character and on which wish will drop
@@ -478,12 +483,12 @@ class Bot(commands.Bot):
         """
         character = random.choices(self.characters_banner2,
                                    self.characters_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{character[0]} на '
-                       f'{get_successful_attempt_for_characters_banner()} '
-                       f'крутке!')
+        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
+                        f'{character[0]} на '
+                        f'{get_successful_attempt_for_characters_banner()} '
+                        f'крутке!')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def weaponsbanner(self, ctx: commands.Context):
         """Predicts which weapon and on which wish will drop
@@ -491,45 +496,45 @@ class Bot(commands.Bot):
         """
         weapon = random.choices(self.weapons_banner,
                                 weights=self.weapons_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()}, тебе выпадет '
-                       f'{weapon[0]} на '
-                       f'{get_successful_attempt_for_weapons_banner()} '
-                       f'крутке!')
+        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
+                        f'{weapon[0]} на '
+                        f'{get_successful_attempt_for_weapons_banner()} '
+                        f'крутке!')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def waifu(self, ctx: commands.Context):
         """Returns a random waifu from the list to the user."""
         waifu = random.choice(self.waifu_list)
-        await ctx.send(f'@{ctx.author.name.strip()} '
-                       f'твоя вайфу – {waifu.title()}')
+        await ctx.reply(f'@{ctx.author.name.strip()} '
+                        f'твоя вайфу – {waifu.title()}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def husband(self, ctx: commands.Context):
         """Returns a random husband from the list to the user."""
         husband = random.choices(self.husband_list,
                                  weights=self.husband_banner_weights)
-        await ctx.send(f'@{ctx.author.name.strip()} твой хасбунд – '
-                       f'{husband[0].title()}')
+        await ctx.reply(f'@{ctx.author.name.strip()} твой хасбунд – '
+                        f'{husband[0].title()}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def hello(self, ctx: commands.Context):
         """Sends a hello back to the user."""
-        await ctx.send(f'приветик, @{ctx.author.name.strip()}!')
+        await ctx.reply(f'приветик, @{ctx.author.name.strip()}!')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def discord(self, ctx: commands.Context):
         """Sends the Discord link."""
-        await ctx.send(f'@{ctx.author.name.strip()}, {self.discord}')
+        await ctx.reply(f'@{ctx.author.name.strip()}, {self.discord}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def telegram(self, ctx: commands.Context):
         """Sends the Telegram-channel link."""
-        await ctx.send(f'@{ctx.author.name.strip()}, {self.telegram}')
+        await ctx.reply(f'@{ctx.author.name.strip()}, {self.telegram}')
 
     @commands.cooldown(1, 30, commands.Bucket.channel)
     @commands.command()
@@ -550,9 +555,9 @@ class Bot(commands.Bot):
     @commands.command()
     async def help(self, ctx: commands.Context):
         """Asks the streamer for help to the user."""
-        await ctx.send(f'@{ctx.author.name.strip()} {self.help}')
+        await ctx.send(f'@zhenyaoh, @{ctx.author.name.strip()} {self.help}')
 
-    @commands.cooldown(1, 30, commands.Bucket.channel)
+    @commands.cooldown(1, 30, commands.Bucket.member)
     @commands.command()
     async def zerohelp(self, ctx: commands.Context):
         """Sends a paste about the fact that
@@ -561,18 +566,19 @@ class Bot(commands.Bot):
         """
         await ctx.send(f'{ctx.author.name.strip()}: {self.zero_help}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def donate(self, ctx: commands.Context):
         """Sends the DonationAlerts link."""
-        await ctx.send(f'@{ctx.author.name.strip()}, {self.donate}')
+        await ctx.reply(f'@{ctx.author.name.strip()}, {self.donate}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def boosty(self, ctx: commands.Context):
         """Sends the Boosty link."""
-        await ctx.send(f'@{ctx.author.name.strip()}, {self.boosty}')
+        await ctx.reply(f'@{ctx.author.name.strip()}, {self.boosty}')
 
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def gratz(self, ctx: commands.Context):
         """Sends congratulations to the streamer."""
@@ -584,37 +590,52 @@ class Bot(commands.Bot):
         """Returns a random paste from the list to the chat."""
         await ctx.send(random.choice(self.pastas))
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def chance(self, ctx: commands.Context):
         """Returns a chance of any occasion to the user."""
-        await ctx.send(f'@{ctx.author.name.strip()}, вероятность '
-                       f'интересующего тебя события – '
-                       f'{random.randint(0, 101)}%')
+        await ctx.reply(f'@{ctx.author.name.strip()}, вероятность '
+                        f'интересующего тебя события – '
+                        f'{random.randint(0, 101)}%')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def askwaifu(self, ctx: commands.Context):
         """Answers to a question of an user
         by a random phrase from the list.
         """
-        await ctx.send(f'@{ctx.author.name.strip()}, '
-                       f'{random.choice(self.answers)}')
+        await ctx.reply(f'@{ctx.author.name.strip()}, '
+                        f'{random.choice(self.answers)}')
 
-    @commands.cooldown(1, 10, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def jujun(self, ctx: commands.Context):
         """Returns the random size of the user's penis
         from -15 to 120 cm.
         """
-        await ctx.send(f'@{ctx.author.name.strip()}, твой писюн: '
-                       f'{random.randint(-15, 121)} см')
+        await ctx.reply(f'@{ctx.author.name.strip()}, твой писюн: '
+                        f'{random.randint(-15, 121)} см')
 
-    @commands.cooldown(1, 5, commands.Bucket.channel)
+    @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def asu(self, ctx: commands.Context):
         """Sends a judgmental paste in the chat."""
         await ctx.send(self.osu)
+
+    @commands.cooldown(1, 60, commands.Bucket.member)
+    @commands.command()
+    async def stats(self, ctx: commands.Context):
+        """Returns the statistics of chat using of the user."""
+        with open(self.logs_path, 'r') as today_logs:
+            logs_string = today_logs.read().lower()
+            messages_amount = len(re.findall(r'' + str(ctx.author.name)
+                                             + ':', logs_string))
+        with open(self.full_logs_path, 'r') as full_logs:
+            full_logs_string = full_logs.read().lower()
+            all_messages_amount = len(re.findall(r'' + str(ctx.author.name)
+                                                 + ':', full_logs_string))
+        await ctx.reply(f'Сообщений за все время: {all_messages_amount}; '
+                        f'Сообщений сегодня: {messages_amount}')
 
 
 # pipenv run python bot.py
