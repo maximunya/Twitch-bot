@@ -471,8 +471,7 @@ class Bot(commands.Bot):
         """
         character = random.choices(self.characters_banner1,
                                    self.characters_banner_weights)
-        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
-                        f'{character[0]} на '
+        await ctx.reply(f'тебе выпадет {character[0]} на '
                         f'{get_successful_attempt_for_characters_banner()} '
                         f'крутке!')
 
@@ -484,8 +483,7 @@ class Bot(commands.Bot):
         """
         character = random.choices(self.characters_banner2,
                                    self.characters_banner_weights)
-        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
-                        f'{character[0]} на '
+        await ctx.reply(f'тебе выпадет {character[0]} на '
                         f'{get_successful_attempt_for_characters_banner()} '
                         f'крутке!')
 
@@ -497,8 +495,7 @@ class Bot(commands.Bot):
         """
         weapon = random.choices(self.weapons_banner,
                                 weights=self.weapons_banner_weights)
-        await ctx.reply(f'@{ctx.author.name.strip()}, тебе выпадет '
-                        f'{weapon[0]} на '
+        await ctx.reply(f'тебе выпадет {weapon[0]} на '
                         f'{get_successful_attempt_for_weapons_banner()} '
                         f'крутке!')
 
@@ -507,8 +504,7 @@ class Bot(commands.Bot):
     async def waifu(self, ctx: commands.Context):
         """Returns a random waifu from the list to the user."""
         waifu = random.choice(self.waifu_list)
-        await ctx.reply(f'@{ctx.author.name.strip()} '
-                        f'твоя вайфу – {waifu.title()}')
+        await ctx.reply(f'твоя вайфу – {waifu.title()}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
@@ -516,26 +512,25 @@ class Bot(commands.Bot):
         """Returns a random husband from the list to the user."""
         husband = random.choices(self.husband_list,
                                  weights=self.husband_banner_weights)
-        await ctx.reply(f'@{ctx.author.name.strip()} твой хасбунд – '
-                        f'{husband[0].title()}')
+        await ctx.reply(f'твой хасбунд – {husband[0].title()}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def hello(self, ctx: commands.Context):
         """Sends a hello back to the user."""
-        await ctx.reply(f'приветик, @{ctx.author.name.strip()}!')
+        await ctx.reply(f'приветик!')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def discord(self, ctx: commands.Context):
         """Sends the Discord link."""
-        await ctx.reply(f'@{ctx.author.name.strip()}, {self.discord}')
+        await ctx.reply(f'{self.discord}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def telegram(self, ctx: commands.Context):
         """Sends the Telegram-channel link."""
-        await ctx.reply(f'@{ctx.author.name.strip()}, {self.telegram}')
+        await ctx.reply(f'{self.telegram}')
 
     @commands.cooldown(1, 30, commands.Bucket.channel)
     @commands.command()
@@ -571,13 +566,13 @@ class Bot(commands.Bot):
     @commands.command()
     async def donate(self, ctx: commands.Context):
         """Sends the DonationAlerts link."""
-        await ctx.reply(f'@{ctx.author.name.strip()}, {self.donate}')
+        await ctx.reply(f'{self.donate}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
     async def boosty(self, ctx: commands.Context):
         """Sends the Boosty link."""
-        await ctx.reply(f'@{ctx.author.name.strip()}, {self.boosty}')
+        await ctx.reply(f'{self.boosty}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
@@ -595,8 +590,7 @@ class Bot(commands.Bot):
     @commands.command()
     async def chance(self, ctx: commands.Context):
         """Returns a chance of any occasion to the user."""
-        await ctx.reply(f'@{ctx.author.name.strip()}, вероятность '
-                        f'интересующего тебя события – '
+        await ctx.reply(f'вероятность интересующего тебя события – '
                         f'{random.randint(0, 101)}%')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
@@ -605,8 +599,7 @@ class Bot(commands.Bot):
         """Answers to a question of an user
         by a random phrase from the list.
         """
-        await ctx.reply(f'@{ctx.author.name.strip()}, '
-                        f'{random.choice(self.answers)}')
+        await ctx.reply(f'{random.choice(self.answers)}')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
@@ -614,8 +607,7 @@ class Bot(commands.Bot):
         """Returns the random size of the user's penis
         from -15 to 120 cm.
         """
-        await ctx.reply(f'@{ctx.author.name.strip()}, твой писюн: '
-                        f'{random.randint(-15, 121)} см')
+        await ctx.reply(f'твой писюн: {random.randint(-15, 121)} см')
 
     @commands.cooldown(1, 10, commands.Bucket.member)
     @commands.command()
