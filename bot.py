@@ -121,7 +121,7 @@ class Bot(commands.Bot):
         ]
 
         self.characters_banner1 = [
-            'Нахида',
+            'Яэ Мико',
             'Дилюк',
             'Мона',
             'Джинн',
@@ -130,7 +130,7 @@ class Bot(commands.Bot):
         ]
 
         self.characters_banner2 = [
-            'Ёимия',
+            'Тарталья',
             'Дилюк',
             'Мона',
             'Джинн',
@@ -139,8 +139,8 @@ class Bot(commands.Bot):
         ]
 
         self.weapons_banner = [
-            'Сновидение тысячи ночей',
-            'Громовой пульс',
+            'Истина Кагура',
+            'Полярная звезда',
             'Лук Амоса',
             'Меч Сокола',
             'Молитва святым ветрам',
@@ -379,11 +379,11 @@ class Bot(commands.Bot):
 
         # Writes the chat logs
         with open(self.logs_path, 'a') as logs:
-            logs.write(f'{message.author.name}: {message.content} '
-                       f'[{datetime.now().strftime("%H:%M:%S")}]\n')
+            logs.write(f'[{datetime.now().strftime("%H:%M:%S")}] '
+                       f'{message.author.name}: {message.content}\n')
         with open(self.full_logs_path, 'a') as full_logs:
-            full_logs.write(f'{message.author.name}: {message.content} '
-                            f'[{datetime.now().strftime("%d/%m/%Y в %H:%M:%S")}]\n')
+            full_logs.write(f'[{datetime.now().strftime("%d/%m в %H:%M:%S")}] '
+                            f'{message.author.name}: {message.content}\n')
 
         # Lets the bot know we want to handle and invoke our commands
         await self.handle_commands(message)
