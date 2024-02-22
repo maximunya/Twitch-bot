@@ -1,2 +1,1 @@
-﻿
-ban_words = []
+﻿ban_words = []
